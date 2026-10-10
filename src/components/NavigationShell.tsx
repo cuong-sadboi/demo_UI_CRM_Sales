@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { ScreenTab } from '../types/crm';
-import { STITCH_SCREENS } from '../data/mockCrmData';
 
 interface NavigationShellProps {
   currentTab: ScreenTab;
@@ -18,7 +17,6 @@ export default function NavigationShell({
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [receiveDataActive, setReceiveDataActive] = useState(true);
-  const [stitchModalOpen, setStitchModalOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -31,9 +29,6 @@ export default function NavigationShell({
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
-
-  const currentStitchScreen =
-    STITCH_SCREENS.find((s) => s.tab === currentTab) || STITCH_SCREENS[0];
 
   const navGroups = [
     {
@@ -117,7 +112,7 @@ export default function NavigationShell({
                     SalesFlow
                   </span>
                   <span className="font-label-sm text-[10px] text-on-surface-variant leading-none mt-1">
-                    CRM Suite • Stitch
+                    CRM Suite
                   </span>
                 </div>
               )}
@@ -230,18 +225,6 @@ export default function NavigationShell({
             </div>
           )}
 
-          {/* Stitch Inspector Button */}
-          <button
-            onClick={() => setStitchModalOpen(true)}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-primary hover:bg-primary-fixed/30 transition-colors font-body-md text-xs cursor-pointer"
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="material-symbols-outlined text-[18px]">design_services</span>
-              {!collapsed && <span className="truncate font-semibold">Bản vẽ Stitch</span>}
-            </div>
-            {!collapsed && <span className="material-symbols-outlined text-[16px]">north_east</span>}
-          </button>
-
           {/* Collapse/Expand Toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
@@ -352,16 +335,6 @@ export default function NavigationShell({
               <span className="hidden sm:inline">Thêm data nhanh</span>
             </button>
 
-            {/* Stitch Quick Compare Button in Header */}
-            <button
-              onClick={() => setStitchModalOpen(true)}
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-fixed text-primary hover:bg-primary-fixed-dim transition-colors text-xs font-semibold cursor-pointer"
-              title="Xem ảnh chụp bản vẽ gốc từ Google Stitch"
-            >
-              <span className="material-symbols-outlined text-[16px]">palette</span>
-              <span>Stitch Design</span>
-            </button>
-
             {/* Notifications with Dropdown */}
             <div className="relative">
               <button
@@ -429,88 +402,6 @@ export default function NavigationShell({
           {children}
         </main>
       </div>
-
-      {/* Modal: Google Stitch Inspector */}
-      {stitchModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-outline-variant/40 space-y-4 my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-[28px]">palette</span>
-                <div>
-                  <h3 className="font-headline-sm text-base font-bold text-on-surface">
-                    Bản vẽ thiết kế gốc Google Stitch
-                  </h3>
-                  <p className="font-body-sm text-xs text-on-surface-variant">
-                    Đối chiếu giao diện hiện tại với thiết kế gốc từ Google Stitch MCP
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setStitchModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-surface-container text-outline hover:text-on-surface cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[24px]">close</span>
-              </button>
-            </div>
-
-            {/* Current Screen Specs */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-surface-container-low text-xs">
-              <div>
-                <span className="text-outline block">Màn hình đang chọn:</span>
-                <strong className="text-on-surface font-semibold">{currentStitchScreen.title}</strong>
-              </div>
-              <div>
-                <span className="text-outline block">Định dạng thiết bị:</span>
-                <span className="text-primary font-medium">{currentStitchScreen.deviceType}</span>
-              </div>
-              <div>
-                <span className="text-outline block">Mã nguồn Stitch Screen ID:</span>
-                <code className="text-secondary font-mono text-[11px] truncate block">
-                  {currentStitchScreen.id}
-                </code>
-              </div>
-            </div>
-
-            {/* Screenshot Preview */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-label-md text-xs font-semibold text-on-surface">
-                  Ảnh chụp thiết kế Google Stitch (Full Resolution 2588px)
-                </span>
-                <a
-                  href={currentStitchScreen.localScreenshot}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-primary hover:underline text-xs"
-                >
-                  <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                  Mở ảnh gốc trong tab mới
-                </a>
-              </div>
-              <div className="max-h-[500px] overflow-y-auto rounded-xl border border-outline-variant/30 bg-surface-container-low p-2">
-                <img
-                  src={currentStitchScreen.localScreenshot}
-                  alt={currentStitchScreen.title}
-                  className="w-full rounded-lg shadow-sm object-top object-contain"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center pt-2">
-              <div className="text-xs text-outline">
-                Đồng bộ qua <strong>Stitch MCP API</strong> (StatelessServer)
-              </div>
-              <button
-                onClick={() => setStitchModalOpen(false)}
-                className="px-4 py-2 bg-primary text-on-primary rounded-xl font-label-md text-xs font-semibold hover:bg-primary-container transition cursor-pointer"
-              >
-                Đóng đối chiếu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal: Quick Add Lead */}
       {quickAddOpen && (

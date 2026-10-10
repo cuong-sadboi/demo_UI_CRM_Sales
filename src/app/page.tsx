@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import NavigationShell from '../components/NavigationShell';
 import OverviewScreen from '../components/screens/OverviewScreen';
 import CustomersScreen from '../components/screens/CustomersScreen';
@@ -15,12 +15,12 @@ export default function HomePage() {
   const [currentTab, setCurrentTab] = useState<ScreenTab>('overview');
   const [globalToast, setGlobalToast] = useState<string | null>(null);
 
-  const showToast = (message: string) => {
+  const showToast = useCallback((message: string) => {
     setGlobalToast(message);
     setTimeout(() => {
       setGlobalToast(null);
     }, 3500);
-  };
+  }, []);
 
   // Sync with URL hash if present
   useEffect(() => {
