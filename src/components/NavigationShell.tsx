@@ -3,6 +3,19 @@
 import React, { useState } from 'react';
 import { ScreenTab } from '../types/crm';
 
+interface NavItem {
+  tab: ScreenTab;
+  label: string;
+  icon: string;
+  badge?: string | null;
+  badgeColor?: string;
+}
+
+interface NavGroup {
+  group: string;
+  items: NavItem[];
+}
+
 interface NavigationShellProps {
   currentTab: ScreenTab;
   onTabChange: (tab: ScreenTab) => void;
@@ -30,7 +43,7 @@ export default function NavigationShell({
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const navGroups = [
+  const navGroups: NavGroup[] = [
     {
       group: 'Tổng quan',
       items: [
@@ -43,9 +56,14 @@ export default function NavigationShell({
         { tab: 'projects' as ScreenTab, label: 'Quản lý dự án', icon: 'folder_special', badge: null },
         { tab: 'customers' as ScreenTab, label: 'Data khách hàng', icon: 'group', badge: '1,420' },
         { tab: 'allocation' as ScreenTab, label: 'Phân bổ data', icon: 'tune', badge: null },
+      ]
+    },
+    {
+      group: 'Sale',
+      items: [
         {
           tab: 'calendar' as ScreenTab,
-          label: 'Lịch gọi lại',
+          label: 'Lịch gọi',
           icon: 'assignment_late',
           badge: '18',
           badgeColor: 'bg-error-container text-on-error-container'
@@ -67,6 +85,13 @@ export default function NavigationShell({
           icon: 'upload_file',
           badge: 'Mới',
           badgeColor: 'bg-primary-fixed text-primary'
+        },
+        {
+          tab: 'roles' as ScreenTab,
+          label: 'Phân quyền & Tài khoản',
+          icon: 'admin_panel_settings',
+          badge: '10user',
+          badgeColor: 'bg-purple-100 text-purple-800'
         }
       ]
     }
@@ -92,9 +117,8 @@ export default function NavigationShell({
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-surface-container-lowest border-r border-outline-variant/30 z-50 flex flex-col justify-between transition-all duration-300 select-none ${
-          collapsed ? 'w-[72px]' : 'w-[260px]'
-        } ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed left-0 top-0 h-full bg-surface-container-lowest border-r border-outline-variant/30 z-50 flex flex-col justify-between transition-all duration-300 select-none ${collapsed ? 'w-[72px]' : 'w-[260px]'
+          } ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Logo Brand Header */}
@@ -143,17 +167,15 @@ export default function NavigationShell({
                         setMobileMenuOpen(false);
                       }}
                       title={collapsed ? item.label : undefined}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer text-left ${
-                        isActive
-                          ? 'bg-primary-container text-on-primary font-semibold shadow-xs'
-                          : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
-                      }`}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer text-left ${isActive
+                        ? 'bg-primary-container text-on-primary font-semibold shadow-xs'
+                        : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
+                        }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
-                          className={`material-symbols-outlined text-[20px] shrink-0 ${
-                            isActive ? 'text-on-primary' : 'text-on-surface-variant'
-                          }`}
+                          className={`material-symbols-outlined text-[20px] shrink-0 ${isActive ? 'text-on-primary' : 'text-on-surface-variant'
+                            }`}
                         >
                           {item.icon}
                         </span>
@@ -164,12 +186,11 @@ export default function NavigationShell({
 
                       {!collapsed && item.badge && (
                         <span
-                          className={`font-numeric-data text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                            item.badgeColor ||
+                          className={`font-numeric-data text-[10px] px-1.5 py-0.5 rounded-full font-bold ${item.badgeColor ||
                             (isActive
                               ? 'bg-white/25 text-white'
                               : 'bg-surface-container text-secondary')
-                          }`}
+                            }`}
                         >
                           {item.badge}
                         </span>
@@ -188,9 +209,8 @@ export default function NavigationShell({
             <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-low">
               <div className="flex items-center gap-2">
                 <span
-                  className={`h-2.5 w-2.5 rounded-full ${
-                    receiveDataActive ? 'bg-tertiary-container animate-pulse' : 'bg-gray-400'
-                  }`}
+                  className={`h-2.5 w-2.5 rounded-full ${receiveDataActive ? 'bg-tertiary-container animate-pulse' : 'bg-gray-400'
+                    }`}
                 />
                 <span className="font-body-sm text-xs text-on-surface font-medium">Nhận data</span>
               </div>
@@ -203,23 +223,20 @@ export default function NavigationShell({
                       : 'Đã tạm dừng nhận data phân bổ'
                   );
                 }}
-                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${
-                  receiveDataActive ? 'bg-primary-container' : 'bg-gray-300'
-                }`}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${receiveDataActive ? 'bg-primary-container' : 'bg-gray-300'
+                  }`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out ${
-                    receiveDataActive ? 'translate-x-4' : 'translate-x-0'
-                  }`}
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out ${receiveDataActive ? 'translate-x-4' : 'translate-x-0'
+                    }`}
                 />
               </button>
             </div>
           ) : (
             <div className="flex justify-center py-1">
               <span
-                className={`h-3 w-3 rounded-full ${
-                  receiveDataActive ? 'bg-tertiary-container' : 'bg-gray-400'
-                }`}
+                className={`h-3 w-3 rounded-full ${receiveDataActive ? 'bg-tertiary-container' : 'bg-gray-400'
+                  }`}
                 title="Trạng thái nhận data"
               />
             </div>
@@ -240,15 +257,13 @@ export default function NavigationShell({
 
       {/* Main Content Layout with Fixed Header */}
       <div
-        className={`transition-all duration-300 ${
-          collapsed ? 'lg:pl-[72px]' : 'lg:pl-[260px]'
-        }`}
+        className={`transition-all duration-300 ${collapsed ? 'lg:pl-[72px]' : 'lg:pl-[260px]'
+          }`}
       >
         {/* Fixed Top Header (Exact Stitch Specs: h-16, fixed, top-0, z-40) */}
         <header
-          className={`fixed top-0 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/30 z-40 px-4 sm:px-6 flex items-center justify-between gap-3 shadow-[0_1px_8px_rgba(0,0,0,0.04)] transition-all duration-300 left-0 ${
-            collapsed ? 'lg:left-[72px]' : 'lg:left-[260px]'
-          }`}
+          className={`fixed top-0 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/30 z-40 px-4 sm:px-6 flex items-center justify-between gap-3 shadow-[0_1px_8px_rgba(0,0,0,0.04)] transition-all duration-300 left-0 ${collapsed ? 'lg:left-[72px]' : 'lg:left-[260px]'
+            }`}
         >
           {/* Left: Mobile hamburger + Project Select */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -398,7 +413,7 @@ export default function NavigationShell({
         </header>
 
         {/* Main Content Area (pt-16 to match header exactly) */}
-        <main className="w-full pt-16 min-h-screen px-4 sm:px-6 lg:px-8 py-6">
+        <main className="w-full pt-16 min-h-screen px-3 sm:px-5 lg:px-6 py-5">
           {children}
         </main>
       </div>

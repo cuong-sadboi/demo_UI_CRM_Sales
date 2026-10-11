@@ -9,6 +9,7 @@ import ProjectsScreen from '../components/screens/ProjectsScreen';
 import ImportScreen from '../components/screens/ImportScreen';
 import ReportsScreen from '../components/screens/ReportsScreen';
 import CalendarScreen from '../components/screens/CalendarScreen';
+import RolesScreen from '../components/screens/RolesScreen';
 import { ScreenTab } from '../types/crm';
 
 export default function HomePage() {
@@ -26,7 +27,7 @@ export default function HomePage() {
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.replace('#', '') as ScreenTab;
-      if (['overview', 'projects', 'customers', 'allocation', 'calendar', 'reports', 'import'].includes(hash)) {
+      if (['overview', 'projects', 'customers', 'allocation', 'calendar', 'reports', 'import', 'roles'].includes(hash)) {
         setCurrentTab(hash);
       }
     };
@@ -71,6 +72,9 @@ export default function HomePage() {
       )}
       {currentTab === 'calendar' && (
         <CalendarScreen onToast={showToast} />
+      )}
+      {currentTab === 'roles' && (
+        <RolesScreen onToast={showToast} />
       )}
     </NavigationShell>
   );

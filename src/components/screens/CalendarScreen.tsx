@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { MOCK_CALLBACKS } from '../../data/mockCrmData';
 import { CallbackTask } from '../../types/crm';
+import AllocatedLeadsSection from '../AllocatedLeadsSection';
 
 interface CalendarScreenProps {
   onToast: (msg: string) => void;
@@ -13,6 +14,7 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [newScheduleModal, setNewScheduleModal] = useState(false);
   const [activeCallTask, setActiveCallTask] = useState<CallbackTask | null>(null);
+  const [schedulePrefill, setSchedulePrefill] = useState<{ name: string; phone: string } | null>(null);
 
   const completeTask = (id: string, name: string) => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
@@ -327,6 +329,15 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
         </div>
       </div>
 
+      {/* 4. Section D: Danh sách số điện thoại được chia (Allocated Leads Pipeline) */}
+      <AllocatedLeadsSection
+        onToast={onToast}
+        onScheduleCall={(customerName, phone) => {
+          setSchedulePrefill({ name: customerName, phone });
+          setNewScheduleModal(true);
+        }}
+      />
+
       {/* Modal: Add New Call Schedule */}
       {newScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
@@ -335,7 +346,13 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
               <h3 className="font-headline-sm text-base font-bold text-on-surface">
                 Đặt lịch hẹn gọi lại mới
               </h3>
-              <button onClick={() => setNewScheduleModal(false)} className="p-1 text-outline cursor-pointer">
+              <button
+                onClick={() => {
+                  setNewScheduleModal(false);
+                  setSchedulePrefill(null);
+                }}
+                className="p-1 text-outline cursor-pointer"
+              >
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
@@ -343,6 +360,7 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
               onSubmit={(e) => {
                 e.preventDefault();
                 setNewScheduleModal(false);
+                setSchedulePrefill(null);
                 onToast('Đã thêm lịch hẹn gọi lại thành công!');
               }}
               className="space-y-3 text-xs"
@@ -351,6 +369,11 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
                 <label className="block uppercase font-bold text-outline mb-1">Khách hàng / SĐT *</label>
                 <input
                   required
+                  defaultValue={
+                    schedulePrefill
+                      ? `${schedulePrefill.name} (${schedulePrefill.phone})`
+                      : ''
+                  }
                   placeholder="Nhập tên hoặc số điện thoại..."
                   className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant/30 rounded-xl"
                 />
@@ -384,7 +407,10 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
               <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant/20">
                 <button
                   type="button"
-                  onClick={() => setNewScheduleModal(false)}
+                  onClick={() => {
+                    setNewScheduleModal(false);
+                    setSchedulePrefill(null);
+                  }}
                   className="px-3 py-2 bg-surface-container rounded-xl text-on-surface cursor-pointer"
                 >
                   Hủy
@@ -400,6 +426,43 @@ export default function CalendarScreen({ onToast }: CalendarScreenProps) {
           </div>
         </div>
       )}
+
+      {/* VoIP Call Task Modal Simulator (for task calls) */}
+      {activeCallTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-surface-container-lowest rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-outline-variant/30 text-center space-y-4 animate-scaleIn">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center animate-pulse">
+              <span className="material-symbols-outlined text-[32px]">ring_volume</span>
+            </div>
+            <div>
+              <h4 className="font-headline-sm text-lg font-bold text-on-surface">
+                Đang kết nối VoIP...
+              </h4>
+              <p className="text-sm font-semibold text-primary mt-1">
+                {activeCallTask.customerName} ({activeCallTask.phone})
+              </p>
+              <span className="text-xs text-outline">{activeCallTask.project} • {activeCallTask.reason}</span>
+            </div>
+
+            <div className="p-3 bg-surface-container-low rounded-xl text-xs text-on-surface-variant text-left space-y-1">
+              <p>• Tổng đài: <strong>VoIP SIP Center HN-01</strong></p>
+              <p>• Thu âm tự động: <strong>Bật (HD Quality)</strong></p>
+              <p>• Trạng thái: <strong>Đang đổ chuông (Ringing...)</strong></p>
+            </div>
+
+            <button
+              onClick={() => {
+                onToast(`Đã kết thúc cuộc gọi với ${activeCallTask.customerName}.`);
+                setActiveCallTask(null);
+              }}
+              className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold text-sm transition cursor-pointer"
+            >
+              Ngắt kết nối cuộc gọi
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
